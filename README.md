@@ -1,6 +1,6 @@
 # sv
 
-Simple String_View implementation for C programming language.
+Simple [String_View](https://en.cppreference.com/w/cpp/string/basic_string_view) implementation for C programming language.
 
 ## Quick Start
 
