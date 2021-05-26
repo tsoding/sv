@@ -42,5 +42,4 @@ jobs:
         shell: cmd
         # this replaces default PowerShell, which can't fail the build
         run: |
-          .\build_msvc.bat
-          .\test.exe
+          .\build_msvc.bat && .\test.exe
