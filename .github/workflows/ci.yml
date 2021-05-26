@@ -32,4 +32,14 @@ jobs:
         env:
           CC: clang
           CXX: clang++
-# TODO: there is not build for Windows
+  build-windows-msvc:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v1
+        # this runs vcvarsall for us, so we get the MSVC toolchain in PATH.
+      - uses: seanmiddleditch/gha-setup-vsdevenv@master
+      - name: build all and examples
+        shell: cmd
+        # this replaces default PowerShell, which can't fail the build
+        run: |
+          .\build_msvc.bat && .\test.exe
