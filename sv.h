@@ -59,6 +59,7 @@ String_View sv_trim_left(String_View sv);
 String_View sv_trim_right(String_View sv);
 String_View sv_trim(String_View sv);
 String_View sv_chop_by_delim(String_View *sv, char delim);
+bool sv_try_chop_by_delim(String_View *sv, char delim, String_View *chunk);
 String_View sv_chop_left(String_View *sv, size_t n);
 String_View sv_chop_right(String_View *sv, size_t n);
 String_View sv_chop_left_while(String_View *sv, bool (*predicate)(char x));
@@ -158,6 +159,30 @@ bool sv_index_of(String_View sv, char c, size_t *index)
     } else {
         return false;
     }
+}
+
+bool sv_try_chop_by_delim(String_View *sv, char delim, String_View *chunk)
+{
+    size_t i = 0;
+    while (i < sv->count && sv->data[i] != delim) {
+        i += 1;
+    }
+
+    String_View result = {
+        .count = i,
+        .data = sv->data,
+    };
+
+    if (i < sv->count) {
+        sv->count -= i + 1;
+        sv->data  += i + 1;
+        if (chunk) {
+            *chunk = result;
+        }
+        return true;
+    }
+
+    return false;
 }
 
 String_View sv_chop_by_delim(String_View *sv, char delim)

@@ -96,6 +96,29 @@ int main(void)
         }
     }
 
+    // Try to chop by delimiter
+    {
+        // Existing
+        {
+            String_View input = SV_STATIC("hello\nworld");
+            String_View line = {0};
+            bool result = sv_try_chop_by_delim(&input, '\n', &line);
+            ASSERT_TRUE(result);
+            ASSERT_EQ(String_View, SV("hello"), line);
+            ASSERT_EQ(String_View, SV("world"), input);
+        }
+
+        // Non-Existing
+        {
+            String_View input = SV_STATIC("hello\nworld");
+            String_View line = {0};
+            bool result = sv_try_chop_by_delim(&input, ' ', &line);
+            ASSERT_TRUE(!result);
+            ASSERT_EQ(String_View, SV(""), line);
+            ASSERT_EQ(String_View, SV("hello\nworld"), input);
+        }
+    }
+
     // Chop N characters
     {
         // Chop left
