@@ -154,6 +154,25 @@ int main(void)
         }
     }
 
+    // Take while
+    {
+        // Take while is_alpha
+        {
+            String_View input = SV_STATIC("hello1234");
+            String_View hello = sv_take_left_while(input, is_alpha);
+            ASSERT_EQ(String_View, SV("hello1234"), input);
+            ASSERT_EQ(String_View, SV("hello"), hello);
+        }
+
+        // Overtake while
+        {
+            String_View input = SV_STATIC("helloworld");
+            String_View hello = sv_take_left_while(input, is_alpha);
+            ASSERT_EQ(String_View, SV("helloworld"), input);
+            ASSERT_EQ(String_View, SV("helloworld"), hello);
+        }
+    }
+
     // Chop while
     {
         // Chop while is_alpha
