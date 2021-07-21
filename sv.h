@@ -33,19 +33,14 @@ typedef struct {
     const char *data;
 } String_View;
 
-#define SV(cstr_lit) \
-    ((String_View) { \
-        .count = sizeof(cstr_lit) - 1, \
-        .data = (cstr_lit) \
-    })
-
-#define SV_STATIC(cstr_lit) \
-    { \
-        .count = sizeof(cstr_lit) - 1, \
-        .data = (cstr_lit) \
+#define SV(cstr_lit) sv_from_parts(cstr_lit, sizeof(cstr_lit) - 1)
+#define SV_STATIC(cstr_lit)   \
+    {                         \
+        sizeof(cstr_lit) - 1, \
+        (cstr_lit)            \
     }
 
-#define SV_NULL (String_View) {0}
+#define SV_NULL sv_from_parts(NULL, 0)
 
 // printf macros for String_View
 #define SV_Fmt "%.*s"
@@ -77,18 +72,15 @@ uint64_t sv_to_u64(String_View sv);
 
 String_View sv_from_parts(const char *data, size_t count)
 {
-    return (String_View) {
-        .count = count,
-        .data = data,
-    };
+    String_View sv;
+    sv.count = count;
+    sv.data = data;
+    return sv;
 }
 
 String_View sv_from_cstr(const char *cstr)
 {
-    return (String_View) {
-        .count = strlen(cstr),
-        .data = cstr,
-    };
+    return sv_from_parts(cstr, strlen(cstr));
 }
 
 String_View sv_trim_left(String_View sv)
@@ -98,10 +90,7 @@ String_View sv_trim_left(String_View sv)
         i += 1;
     }
 
-    return (String_View) {
-        .count = sv.count - i,
-        .data = sv.data + i,
-    };
+    return sv_from_parts(sv.data + i, sv.count - i);
 }
 
 String_View sv_trim_right(String_View sv)
@@ -111,10 +100,7 @@ String_View sv_trim_right(String_View sv)
         i += 1;
     }
 
-    return (String_View) {
-        .count = sv.count - i,
-        .data = sv.data
-    };
+    return sv_from_parts(sv.data, sv.count - i);
 }
 
 String_View sv_trim(String_View sv)
@@ -128,10 +114,7 @@ String_View sv_chop_left(String_View *sv, size_t n)
         n = sv->count;
     }
 
-    String_View result = {
-        .data = sv->data,
-        .count = n,
-    };
+    String_View result = sv_from_parts(sv->data, n);
 
     sv->data  += n;
     sv->count -= n;
@@ -145,10 +128,7 @@ String_View sv_chop_right(String_View *sv, size_t n)
         n = sv->count;
     }
 
-    String_View result = {
-        .data = sv->data + sv->count - n,
-        .count = n
-    };
+    String_View result = sv_from_parts(sv->data + sv->count - n, n);
 
     sv->count -= n;
 
@@ -179,10 +159,7 @@ bool sv_try_chop_by_delim(String_View *sv, char delim, String_View *chunk)
         i += 1;
     }
 
-    String_View result = {
-        .count = i,
-        .data = sv->data,
-    };
+    String_View result = sv_from_parts(sv->data, i);
 
     if (i < sv->count) {
         sv->count -= i + 1;
@@ -203,10 +180,7 @@ String_View sv_chop_by_delim(String_View *sv, char delim)
         i += 1;
     }
 
-    String_View result = {
-        .count = i,
-        .data = sv->data,
-    };
+    String_View result = sv_from_parts(sv->data, i);
 
     if (i < sv->count) {
         sv->count -= i + 1;
@@ -222,11 +196,7 @@ String_View sv_chop_by_delim(String_View *sv, char delim)
 bool sv_starts_with(String_View sv, String_View expected_prefix)
 {
     if (expected_prefix.count <= sv.count) {
-        String_View actual_prefix = {
-            .data = sv.data,
-            .count = expected_prefix.count,
-        };
-
+        String_View actual_prefix = sv_from_parts(sv.data, expected_prefix.count);
         return sv_eq(expected_prefix, actual_prefix);
     }
 
@@ -236,11 +206,7 @@ bool sv_starts_with(String_View sv, String_View expected_prefix)
 bool sv_ends_with(String_View sv, String_View expected_suffix)
 {
     if (expected_suffix.count <= sv.count) {
-        String_View actual_suffix = {
-            .data = sv.data + sv.count - expected_suffix.count,
-            .count = expected_suffix.count
-        };
-
+        String_View actual_suffix = sv_from_parts(sv.data + sv.count - expected_suffix.count, expected_suffix.count);
         return sv_eq(expected_suffix, actual_suffix);
     }
 
@@ -282,10 +248,7 @@ String_View sv_take_left_while(String_View sv, bool (*predicate)(char x))
     while (i < sv.count && predicate(sv.data[i])) {
         i += 1;
     }
-    return (String_View) {
-        .count = i,
-        .data = sv.data,
-    };
+    return sv_from_parts(sv.data, i);
 }
 
 #endif // SV_IMPLEMENTATION
