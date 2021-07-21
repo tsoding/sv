@@ -12,8 +12,8 @@ void sv_assert_eq_String_View(const char *file, size_t line,
     if (!sv_eq(expected, actual)) {
         fprintf(stderr, "%s:%zu: FAILED: %s == %s\n",
                 file, line, expected_expr, actual_expr);
-        fprintf(stderr, "  EXPECTED: "SV_Fmt"\n", SV_Arg(expected));
-        fprintf(stderr, "  ACTUAL:   "SV_Fmt"\n", SV_Arg(actual));
+        fprintf(stderr, "  EXPECTED: " SV_Fmt "\n", SV_Arg(expected));
+        fprintf(stderr, "  ACTUAL:   " SV_Fmt "\n", SV_Arg(actual));
         exit(1);
     }
 }
@@ -38,8 +38,8 @@ void sv_assert_eq_uint64_t(const char *file, size_t line,
     if (expected != actual) {
         fprintf(stderr, "%s:%zu: FAILED: %s == %s\n",
                 file, line, expected_expr, actual_expr);
-        fprintf(stderr, "  EXPECTED: %"PRIu64"\n", expected);
-        fprintf(stderr, "  ACTUAL:   %"PRIu64"\n", actual);
+        fprintf(stderr, "  EXPECTED: %" PRIu64 "\n", expected);
+        fprintf(stderr, "  ACTUAL:   %" PRIu64 "\n", actual);
         exit(1);
     }
 }
@@ -101,7 +101,7 @@ int main(void)
         // Existing
         {
             String_View input = SV_STATIC("hello\nworld");
-            String_View line = {0};
+            String_View line = SV_NULL;
             bool result = sv_try_chop_by_delim(&input, '\n', &line);
             ASSERT_TRUE(result);
             ASSERT_EQ(String_View, SV("hello"), line);
@@ -111,7 +111,7 @@ int main(void)
         // Non-Existing
         {
             String_View input = SV_STATIC("hello\nworld");
-            String_View line = {0};
+            String_View line = SV_NULL;
             bool result = sv_try_chop_by_delim(&input, ' ', &line);
             ASSERT_TRUE(!result);
             ASSERT_EQ(String_View, SV(""), line);
