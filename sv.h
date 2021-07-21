@@ -54,6 +54,7 @@ typedef struct {
 //   String_View name = ...;
 //   printf("Name: "SV_Fmt"\n", SV_Arg(name));
 
+String_View sv_from_parts(const char *data, size_t count);
 String_View sv_from_cstr(const char *cstr);
 String_View sv_trim_left(String_View sv);
 String_View sv_trim_right(String_View sv);
@@ -73,6 +74,15 @@ uint64_t sv_to_u64(String_View sv);
 #endif  // SV_H_
 
 #ifdef SV_IMPLEMENTATION
+
+String_View sv_from_parts(const char *data, size_t count)
+{
+    return (String_View) {
+        .count = count,
+        .data = data,
+    };
+}
+
 String_View sv_from_cstr(const char *cstr)
 {
     return (String_View) {
