@@ -179,19 +179,11 @@ SVDEF bool sv_try_chop_by_delim(String_View *sv, char delim, String_View *chunk)
 
 SVDEF String_View sv_chop_by_delim(String_View *sv, char delim)
 {
-    size_t i = 0;
-    while (i < sv->count && sv->data[i] != delim) {
-        i += 1;
-    }
+    String_View result;
 
-    String_View result = sv_from_parts(sv->data, i);
-
-    if (i < sv->count) {
-        sv->count -= i + 1;
-        sv->data  += i + 1;
-    } else {
-        sv->count -= i;
-        sv->data  += i;
+    if (!sv_try_chop_by_delim(sv, delim, &result)) {
+	    result = *sv;
+	    *sv = SV_NULL;
     }
 
     return result;
