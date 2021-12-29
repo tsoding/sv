@@ -60,6 +60,7 @@ SVDEF String_View sv_trim_right(String_View sv);
 SVDEF String_View sv_trim(String_View sv);
 SVDEF String_View sv_take_left_while(String_View sv, bool (*predicate)(char x));
 SVDEF String_View sv_chop_by_delim(String_View *sv, char delim);
+SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim);
 SVDEF bool sv_try_chop_by_delim(String_View *sv, char delim, String_View *chunk);
 SVDEF String_View sv_chop_left(String_View *sv, size_t n);
 SVDEF String_View sv_chop_right(String_View *sv, size_t n);
@@ -193,6 +194,32 @@ SVDEF String_View sv_chop_by_delim(String_View *sv, char delim)
         sv->count -= i;
         sv->data  += i;
     }
+
+    return result;
+}
+
+SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim)
+{
+    String_View window = sv_from_parts(sv->data, thicc_delim.count);
+    size_t i = 0;
+    while (i + thicc_delim.count < sv->count 
+        && !(sv_eq(window, thicc_delim))) 
+    {
+        i++;
+        window.data++;
+    }
+
+    String_View result = sv_from_parts(sv->data, i);
+
+    if (i + thicc_delim.count == sv->count) {
+        // include last <thicc_delim.count> characters if they aren't 
+        //  equal to thicc_delim
+        result.count += thicc_delim.count; 
+    }
+    
+    // Chop!
+    sv->data  += i + thicc_delim.count;
+    sv->count -= i + thicc_delim.count;
 
     return result;
 }
