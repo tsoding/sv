@@ -96,6 +96,25 @@ int main(void)
         }
     }
 
+    // Chop by String_View (thicc delimiter)
+    {
+        // Existing
+        {
+            String_View input = SV_STATIC("hello\nworld\ngoodbye");
+            String_View line = sv_chop_by_sv(&input, SV("\nwor"));
+            ASSERT_EQ(String_View, SV("hello"), line);
+            ASSERT_EQ(String_View, SV("ld\ngoodbye"), input);
+        }
+
+        // Non-Existing
+        {
+            String_View input = SV_STATIC("hello\nworld");
+            String_View line  = sv_chop_by_sv(&input, SV("goodbye"));
+            ASSERT_EQ(String_View, SV("hello\nworld"), line);
+            ASSERT_EQ(String_View, SV(""), input);
+        }
+    }
+
     // Try to chop by delimiter
     {
         // Existing
