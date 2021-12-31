@@ -211,6 +211,27 @@ int main(void)
         }
     }
 
+    // Equals, ignoring case
+    {
+        // exactly equal
+        {
+            String_View input = SV_STATIC("hello, world");
+            ASSERT_TRUE(sv_eq_ignorecase(input, SV("hello, world")));
+        }
+
+        // equal ignoring case
+        {
+            String_View input = SV_STATIC("Hello, World");
+            ASSERT_TRUE(sv_eq_ignorecase(input, SV("hello, world")));
+        }
+
+        // unequal
+        {
+            String_View input = SV_STATIC("Goodbye, World");
+            ASSERT_TRUE(!(sv_eq_ignorecase(input, SV("Hello, World"))));
+        }
+    }
+
     // Index of
     {
         size_t index = 0;
