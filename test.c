@@ -101,7 +101,7 @@ int main(void)
         // Existing
         {
             String_View input = SV_STATIC("hello\nworld\ngoodbye");
-            String_View line = sv_chop_by_sv(&input, SV("\nwor"));
+            String_View line = sv_chop_by_sv_left(&input, SV("\nwor"));
             ASSERT_EQ(String_View, SV("hello"), line);
             ASSERT_EQ(String_View, SV("ld\ngoodbye"), input);
         }
@@ -109,7 +109,7 @@ int main(void)
         // Non-Existing
         {
             String_View input = SV_STATIC("hello\nworld");
-            String_View line  = sv_chop_by_sv(&input, SV("goodbye"));
+            String_View line  = sv_chop_by_sv_left(&input, SV("goodbye"));
             ASSERT_EQ(String_View, SV("hello\nworld"), line);
             ASSERT_EQ(String_View, SV(""), input);
         }
