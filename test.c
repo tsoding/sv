@@ -115,6 +115,41 @@ int main(void)
         }
     }
 
+    // Chop by String_View from the right side
+    {
+        // Existing, on the right
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV(" goodbye"));
+            ASSERT_EQ(String_View, SV(""), output);
+            ASSERT_EQ(String_View, SV("hello world"), input);
+        }
+
+        // Existing, in the middle
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV(" world"));
+            ASSERT_EQ(String_View, SV(" goodbye"), output);
+            ASSERT_EQ(String_View, SV("hello"), input);
+        }
+
+        // Existing, on the left
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV("hello"));
+            ASSERT_EQ(String_View, SV(" world goodbye"), output);
+            ASSERT_EQ(String_View, SV(""), input);
+        }
+
+        // Non-existing
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV("foo"));
+            ASSERT_EQ(String_View, SV("hello world goodbye"), output);
+            ASSERT_EQ(String_View, SV(""), input);
+        }
+    }
+
     // Try to chop by delimiter
     {
         // Existing
