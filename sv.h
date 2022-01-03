@@ -53,6 +53,9 @@ typedef struct {
 //   String_View name = ...;
 //   printf("Name: "SV_Fmt"\n", SV_Arg(name));
 
+// For backwards compatibility
+#define sv_chop_by_sv sv_chop_by_sv_left
+
 SVDEF String_View sv_from_parts(const char *data, size_t count);
 SVDEF String_View sv_from_cstr(const char *cstr);
 SVDEF String_View sv_trim_left(String_View sv);
