@@ -249,8 +249,12 @@ SVDEF bool sv_eq(String_View a, String_View b)
 {
     if (a.count != b.count) {
         return false;
-    } else {
+    } else if (a.data && b.data) {
         return memcmp(a.data, b.data, a.count) == 0;
+    } else if (a.count == 0) {
+        return true;
+    } else {
+        return false;
     }
 }
 

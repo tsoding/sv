@@ -211,6 +211,33 @@ int main(void)
         }
     }
 
+    // Equals
+    {
+        // empty and null
+        {
+            String_View input = SV_STATIC("");
+            ASSERT_TRUE(sv_eq(input, SV_NULL));
+        }
+
+        // non-empty and null
+        {
+            String_View input = SV_STATIC("hello, world");
+            ASSERT_TRUE(!(sv_eq(input, SV_NULL)));
+        }
+
+        // equal
+        {
+            String_View input = SV_STATIC("hello, world");
+            ASSERT_TRUE(sv_eq(input, SV("hello, world")));
+        }
+
+        // unequal
+        {
+            String_View input = SV_STATIC("hello, world");
+            ASSERT_TRUE(!(sv_eq(input, SV("goodbye, world"))));
+        }
+    }
+
     // Equals, ignoring case
     {
         // exactly equal
