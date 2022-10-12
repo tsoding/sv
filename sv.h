@@ -55,6 +55,7 @@ typedef struct {
 
 SVDEF String_View sv_from_parts(const char *data, size_t count);
 SVDEF String_View sv_from_cstr(const char *cstr);
+SVDEF String_View sv_from_file(const char *file_name);
 SVDEF String_View sv_trim_left(String_View sv);
 SVDEF String_View sv_trim_right(String_View sv);
 SVDEF String_View sv_trim(String_View sv);
@@ -87,6 +88,24 @@ SVDEF String_View sv_from_parts(const char *data, size_t count)
 SVDEF String_View sv_from_cstr(const char *cstr)
 {
     return sv_from_parts(cstr, strlen(cstr));
+}
+
+SVDEF String_View sv_from_file(const char *file_path, char* buf)
+{
+  FILE* file = fopen(file_path, "r");
+  String_View sv;
+
+  fseek(file, 0, SEEK_END);
+  long size_of_file = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  fread(buf, size_of_file, 1, file);
+  fclose(file);
+
+  sv.count = size_of_file;
+  sv.data  = buf;
+
+  return sv;
 }
 
 SVDEF String_View sv_trim_left(String_View sv)
