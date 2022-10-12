@@ -55,7 +55,7 @@ typedef struct {
 
 SVDEF String_View sv_from_parts(const char *data, size_t count);
 SVDEF String_View sv_from_cstr(const char *cstr);
-SVDEF String_View sv_from_file(const char *file_name);
+SVDEF String_View sv_from_file(const char *file_name,char *buf);
 SVDEF String_View sv_trim_left(String_View sv);
 SVDEF String_View sv_trim_right(String_View sv);
 SVDEF String_View sv_trim(String_View sv);
