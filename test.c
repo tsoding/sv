@@ -274,7 +274,13 @@ int main(void)
 
     // To Integer
     {
-        ASSERT_EQ(uint64_t, 1234567890, sv_to_u64(SV("1234567890")));
+        String_View input = SV_STATIC("1234567890");
+
+        ASSERT_EQ(uint64_t, 1234567890, sv_to_u64(input));
+        ASSERT_EQ(String_View, input, SV("1234567890"));
+
+        ASSERT_EQ(uint64_t, 1234567890, sv_chop_u64(&input));
+        ASSERT_TRUE(input.count == 0);
     }
 
     printf("OK\n");
