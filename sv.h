@@ -71,6 +71,7 @@ SVDEF bool sv_eq_ignorecase(String_View a, String_View b);
 SVDEF bool sv_starts_with(String_View sv, String_View prefix);
 SVDEF bool sv_ends_with(String_View sv, String_View suffix);
 SVDEF uint64_t sv_to_u64(String_View sv);
+uint64_t sv_chop_u64(String_View *sv);
 
 #endif  // SV_H_
 
@@ -203,8 +204,8 @@ SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim)
 {
     String_View window = sv_from_parts(sv->data, thicc_delim.count);
     size_t i = 0;
-    while (i + thicc_delim.count < sv->count 
-        && !(sv_eq(window, thicc_delim))) 
+    while (i + thicc_delim.count < sv->count
+        && !(sv_eq(window, thicc_delim)))
     {
         i++;
         window.data++;
@@ -213,11 +214,11 @@ SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim)
     String_View result = sv_from_parts(sv->data, i);
 
     if (i + thicc_delim.count == sv->count) {
-        // include last <thicc_delim.count> characters if they aren't 
+        // include last <thicc_delim.count> characters if they aren't
         //  equal to thicc_delim
-        result.count += thicc_delim.count; 
+        result.count += thicc_delim.count;
     }
-    
+
     // Chop!
     sv->data  += i + thicc_delim.count;
     sv->count -= i + thicc_delim.count;
@@ -259,19 +260,19 @@ SVDEF bool sv_eq_ignorecase(String_View a, String_View b)
     if (a.count != b.count) {
         return false;
     }
-    
+
     char x, y;
     for (size_t i = 0; i < a.count; i++) {
         x = 'A' <= a.data[i] && a.data[i] <= 'Z'
               ? a.data[i] + 32
               : a.data[i];
-        
+
         y = 'A' <= b.data[i] && b.data[i] <= 'Z'
               ? b.data[i] + 32
               : b.data[i];
 
         if (x != y) return false;
-    } 
+    }
     return true;
 }
 
