@@ -53,6 +53,9 @@ typedef struct {
 //   String_View name = ...;
 //   printf("Name: "SV_Fmt"\n", SV_Arg(name));
 
+// For backwards compatibility
+#define sv_chop_by_sv sv_chop_by_sv_left
+
 SVDEF String_View sv_from_parts(const char *data, size_t count);
 SVDEF String_View sv_from_cstr(const char *cstr);
 SVDEF String_View sv_trim_left(String_View sv);
@@ -60,7 +63,8 @@ SVDEF String_View sv_trim_right(String_View sv);
 SVDEF String_View sv_trim(String_View sv);
 SVDEF String_View sv_take_left_while(String_View sv, bool (*predicate)(char x));
 SVDEF String_View sv_chop_by_delim(String_View *sv, char delim);
-SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim);
+SVDEF String_View sv_chop_by_sv_left(String_View *sv, String_View thicc_delim);
+SVDEF String_View sv_chop_by_sv_right(String_View *sv, String_View thicc_delim);
 SVDEF bool sv_try_chop_by_delim(String_View *sv, char delim, String_View *chunk);
 SVDEF String_View sv_chop_left(String_View *sv, size_t n);
 SVDEF String_View sv_chop_right(String_View *sv, size_t n);
@@ -200,7 +204,7 @@ SVDEF String_View sv_chop_by_delim(String_View *sv, char delim)
     return result;
 }
 
-SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim)
+SVDEF String_View sv_chop_by_sv_left(String_View *sv, String_View thicc_delim)
 {
     String_View window = sv_from_parts(sv->data, thicc_delim.count);
     size_t i = 0;
@@ -222,6 +226,31 @@ SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim)
     // Chop!
     sv->data  += i + thicc_delim.count;
     sv->count -= i + thicc_delim.count;
+
+    return result;
+}
+
+SVDEF String_View sv_chop_by_sv_right(String_View *sv, String_View thicc_delim)
+{
+    if (thicc_delim.count > sv->count) {
+        return sv_chop_right(sv, sv->count);
+    }
+
+    size_t i = sv->count - thicc_delim.count;
+
+    String_View window = sv_from_parts(sv->data + i, thicc_delim.count);
+    
+    while (i > 0 && !(sv_eq(window, thicc_delim))) {
+        window.data--;
+        i--;
+    }
+
+    String_View result = sv_chop_right(sv, sv->count - i);
+
+    if (sv_eq(window, thicc_delim)) {
+        result.data  += thicc_delim.count;
+        result.count -= thicc_delim.count;
+    }
 
     return result;
 }

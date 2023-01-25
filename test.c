@@ -101,7 +101,7 @@ int main(void)
         // Existing
         {
             String_View input = SV_STATIC("hello\nworld\ngoodbye");
-            String_View line = sv_chop_by_sv(&input, SV("\nwor"));
+            String_View line = sv_chop_by_sv_left(&input, SV("\nwor"));
             ASSERT_EQ(String_View, SV("hello"), line);
             ASSERT_EQ(String_View, SV("ld\ngoodbye"), input);
         }
@@ -109,8 +109,43 @@ int main(void)
         // Non-Existing
         {
             String_View input = SV_STATIC("hello\nworld");
-            String_View line  = sv_chop_by_sv(&input, SV("goodbye"));
+            String_View line  = sv_chop_by_sv_left(&input, SV("goodbye"));
             ASSERT_EQ(String_View, SV("hello\nworld"), line);
+            ASSERT_EQ(String_View, SV(""), input);
+        }
+    }
+
+    // Chop by String_View from the right side
+    {
+        // Existing, on the right
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV(" goodbye"));
+            ASSERT_EQ(String_View, SV(""), output);
+            ASSERT_EQ(String_View, SV("hello world"), input);
+        }
+
+        // Existing, in the middle
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV(" world"));
+            ASSERT_EQ(String_View, SV(" goodbye"), output);
+            ASSERT_EQ(String_View, SV("hello"), input);
+        }
+
+        // Existing, on the left
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV("hello"));
+            ASSERT_EQ(String_View, SV(" world goodbye"), output);
+            ASSERT_EQ(String_View, SV(""), input);
+        }
+
+        // Non-existing
+        {
+            String_View input = SV_STATIC("hello world goodbye");
+            String_View output = sv_chop_by_sv_right(&input, SV("foo"));
+            ASSERT_EQ(String_View, SV("hello world goodbye"), output);
             ASSERT_EQ(String_View, SV(""), input);
         }
     }
