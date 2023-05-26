@@ -60,6 +60,7 @@ SVDEF String_View sv_trim_right(String_View sv);
 SVDEF String_View sv_trim(String_View sv);
 SVDEF String_View sv_take_left_while(String_View sv, bool (*predicate)(char x));
 SVDEF String_View sv_chop_by_delim(String_View *sv, char delim);
+SVDEF String_View sv_chop_by_sep(String_View *sv, String_View sep);
 SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim);
 SVDEF bool sv_try_chop_by_delim(String_View *sv, char delim, String_View *chunk);
 SVDEF String_View sv_chop_left(String_View *sv, size_t n);
@@ -198,6 +199,33 @@ SVDEF String_View sv_chop_by_delim(String_View *sv, char delim)
     }
 
     return result;
+}
+
+SVDEF String_View sv_chop_by_sep(String_View *sv, String_View sep)
+{
+  size_t i = 0;
+  while (i < sv->count) {
+    for (size_t j = 0; j < sep.count; ++j)
+      if (sv->data[i] == sep.data[j])
+        goto chop;
+
+    ++i;
+  }
+
+chop : {
+
+  String_View result = sv_from_parts(sv->data, i);
+
+  if (i < sv->count) {
+    sv->count -= i + 1;
+    sv->data += i + 1;
+  } else {
+    sv->count -= i;
+    sv->data += i;
+  }
+
+  return result;
+}
 }
 
 SVDEF String_View sv_chop_by_sv(String_View *sv, String_View thicc_delim)
