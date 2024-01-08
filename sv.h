@@ -72,6 +72,9 @@ SVDEF bool sv_starts_with(String_View sv, String_View prefix);
 SVDEF bool sv_ends_with(String_View sv, String_View suffix);
 SVDEF uint64_t sv_to_u64(String_View sv);
 uint64_t sv_chop_u64(String_View *sv);
+SVDEF int sv_cpy(String_View *dest, const String_View *src);
+SVDEF int sv_cat(String_View *dest, const String_View *src);
+String_View svdup(const String_View *sv);
 
 #endif  // SV_H_
 
@@ -314,6 +317,72 @@ SVDEF String_View sv_take_left_while(String_View sv, bool (*predicate)(char x))
         i += 1;
     }
     return sv_from_parts(sv.data, i);
+}
+
+SVDEF int sv_cpy(String_View *dest, const String_View *src) {
+    if (dest == NULL || src == NULL || src->data == NULL) {
+        return -1; // Invalid arguments
+    }
+
+    dest->count = src->count;
+    dest->data = (const char *)malloc(dest->count + 1);
+
+    if (dest->data != NULL) {
+        memcpy((void *)dest->data, src->data, dest->count);
+        ((char *)dest->data)[dest->count] = '\0';
+        return 0; // Success
+    } else {
+        dest->count = 0;
+        return -3; // Memory allocation failure
+    }
+}
+
+SVDEF int sv_cat(String_View *dest, const String_View *src) {
+    if (dest == NULL || src == NULL || src->data == NULL) {
+        return -1; // Invalid arguments
+    }
+
+    size_t new_count = dest->count + src->count;
+
+    if (new_count + 1 > SIZE_MAX || dest->count > SIZE_MAX - src->count) {
+        return -2; // Buffer overflow
+    }
+
+    char *new_data = (char *)malloc(new_count + 1);
+
+    if (new_data != NULL) {
+        memcpy(new_data, dest->data, dest->count);
+        memcpy(new_data + dest->count, src->data, src->count);
+        new_data[new_count] = '\0';
+
+        free((void *)dest->data);
+        dest->count = new_count;
+        dest->data = new_data;
+
+        return 0; // Success
+    } else {
+        dest->count = 0;
+        return -3; // Memory allocation failure
+    }
+}
+
+SVDEF String_View sv_dup(const String_View *sv) {
+    if (sv == NULL || sv->data == NULL) {
+        // Rückgabe einer leeren String_View für ungültige Argumente
+        String_View empty_sv = {0, NULL};
+        return empty_sv;
+    }
+
+    size_t length = strlen(sv->data);
+    char *duplicate = (char *)malloc(length + 1);
+
+    if (duplicate != NULL) {
+        memcpy(duplicate, sv->data, length);
+        duplicate[length] = '\0';
+    }
+
+    String_View result = {length, duplicate};
+    return result;
 }
 
 #endif // SV_IMPLEMENTATION
